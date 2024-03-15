@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transito</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url(mario.gif);
+        }
+ 
+        #imageContainer {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            animation: borderChange 5s infinite;
+        }
+ 
+        img {
+            width: 400px;
+            height: auto;
+            margin: 20px;
+            border-radius: 10px;
+        }
+ 
+        @keyframes borderChange {
+            0% { border-color: transparent; }
+            25% { border-color: #4ae9d7; }
+            50% { border-color: #00ff6e; }
+            75% { border-color: #00ff51; }
+            100% { border-color: transparent; }
+        }
+ 
+        h1 {
+            text-align: center;
+            color: rgb(67, 167, 229);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body id="bg">
+ 
+    <div id="imageContainer">
+       
+    </div>
+ 
+    <script>
+        let estadoAnterior = null;
+        function carregarImagem() {
+            fetch('https://niloweb.com.br/transit-room/api/reg_endpoint.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data[0].res !== estadoAnterior) {
+                        estadoAnterior = data[0].res;
+ 
+                        if (data && data[0] && data[0].res) {
+                            const imagem = document.createElement('img');
+                            const condition = data[0].res;
+                            let bg = document.getElementById('bg');
+                            switch (condition) {
+                                case 'A':
+                                    imagem.src = "imagem3.png";
+                                    playSound();
+                                    break;
+ 
+                                case 'B':
+                                    imagem.src = "imagem.png";
+                                    playSound();
+                                    break;
+ 
+                                case 'L':
+                                    imagem.src = "imagem2.png";
+                                    break;
+ 
+                                default:
+                                    console.error('Condição desconhecida:', condition);
+                            }
+                            document.getElementById('imageContainer').appendChild(imagem);
+                            playSound()
+                        } else {
+                            console.error('Erro ao carregar imagem da API.');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao conectar à API:', error);
+                });
+        }
+ 
+        function playSound() {
+            const audio = new Audio('musics.mp3');
+            audio.onended = function () {};
+            audio.play();
+        }
+ 
+        carregarImagem();
+        setInterval(carregarImagem, 1000);
+    </script>
+</body>
+</html>
